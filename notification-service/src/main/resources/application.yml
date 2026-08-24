@@ -30,3 +30,4 @@ google:
  frontend-success-uri: ${GOOGLE_FRONTEND_SUCCESS_URI:http://localhost:5173/calendar-connected}
 app.internal-api-key: ${INTERNAL_API_KEY:replace-with-a-second-long-random-secret}
 management.endpoints.web.exposure.include: health,info
+spring.jpa.properties.hibernate.default_schema: ${SPRING_FLYWAY_DEFAULT_SCHEMA:public}

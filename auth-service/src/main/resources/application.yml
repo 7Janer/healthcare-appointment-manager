@@ -16,3 +16,4 @@ app.admin:
   email: ${ADMIN_EMAIL:admin@clinic.local}
   password: ${ADMIN_PASSWORD:ChangeMe123!}
 management.endpoints.web.exposure.include: health,info
+spring.jpa.properties.hibernate.default_schema: ${SPRING_FLYWAY_DEFAULT_SCHEMA:public}

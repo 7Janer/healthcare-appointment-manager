@@ -18,3 +18,4 @@ app:
  clinic-zone: ${CLINIC_TIMEZONE:Asia/Kolkata}
  outbox-delay-ms: 5000
 management.endpoints.web.exposure.include: health,info
+spring.jpa.properties.hibernate.default_schema: ${SPRING_FLYWAY_DEFAULT_SCHEMA:public}
