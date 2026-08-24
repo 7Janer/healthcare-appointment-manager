@@ -1,26 +1,47 @@
 server:
   port: ${PORT:8080}
+
 spring:
   application:
     name: api-gateway
+
   cloud:
     gateway:
       routes:
         - id: auth-service
           uri: ${AUTH_SERVICE_URL:http://localhost:8081}
-          predicates: [Path=/api/auth/**]
+          predicates:
+            - Path=/api/auth/**
+
         - id: doctor-service
           uri: ${DOCTOR_SERVICE_URL:http://localhost:8082}
-          predicates: [Path=/api/doctors/**,/api/admin/doctors/**]
+          predicates:
+            - Path=/api/doctors/**
+
+        - id: doctor-admin-service
+          uri: ${DOCTOR_SERVICE_URL:http://localhost:8082}
+          predicates:
+            - Path=/api/admin/doctors/**
+
         - id: appointment-service
           uri: ${APPOINTMENT_SERVICE_URL:http://localhost:8083}
-          predicates: [Path=/api/appointments/**]
+          predicates:
+            - Path=/api/appointments/**
+
         - id: notification-service
           uri: ${NOTIFICATION_SERVICE_URL:http://localhost:8085}
-          predicates: [Path=/api/calendar/**]
+          predicates:
+            - Path=/api/calendar/**
+
 security:
   jwt:
     secret: ${JWT_SECRET:replace-with-a-long-random-256-bit-secret}
+
 app:
   frontend-url: ${FRONTEND_URL:http://localhost:5173}
-management.endpoints.web.exposure.include: health,info
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
