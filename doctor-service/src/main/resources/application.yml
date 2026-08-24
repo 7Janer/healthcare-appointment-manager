@@ -1,8 +1,8 @@
-server.port: 8082
+server.port: ${PORT:8082}
 spring:
   application.name: doctor-service
   datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/doctor_db}
+    url: ${DB_URL:jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:postgres}}
     username: ${POSTGRES_USER:clinic}
     password: ${POSTGRES_PASSWORD:clinic_password}
   jpa:

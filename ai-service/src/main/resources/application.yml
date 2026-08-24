@@ -1,8 +1,8 @@
-server.port: 8084
+server.port: ${PORT:8084}
 spring:
  application.name: ai-service
  datasource:
-  url: ${DB_URL:jdbc:postgresql://localhost:5432/ai_db}
+  url: ${DB_URL:jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:postgres}}
   username: ${POSTGRES_USER:clinic}
   password: ${POSTGRES_PASSWORD:clinic_password}
  jpa:

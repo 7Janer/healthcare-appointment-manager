@@ -1,0 +1,281 @@
+envVarGroups:
+  - name: careflow-7janer-shared
+    envVars:
+      - key: JWT_SECRET
+        generateValue: true
+      - key: INTERNAL_API_KEY
+        generateValue: true
+
+databases:
+  - name: careflow-7janer-db
+    plan: free
+    region: singapore
+    databaseName: careflow
+    user: careflow_user
+    postgresMajorVersion: "17"
+
+services:
+  - type: web
+    name: careflow-7janer-auth
+    runtime: docker
+    plan: free
+    region: singapore
+    branch: main
+    dockerfilePath: ./auth-service/Dockerfile
+    dockerContext: .
+    healthCheckPath: /actuator/health
+    envVars:
+      - fromGroup: careflow-7janer-shared
+      - key: POSTGRES_HOST
+        fromDatabase:
+          name: careflow-7janer-db
+          property: host
+      - key: POSTGRES_PORT
+        fromDatabase:
+          name: careflow-7janer-db
+          property: port
+      - key: POSTGRES_DB
+        fromDatabase:
+          name: careflow-7janer-db
+          property: database
+      - key: POSTGRES_USER
+        fromDatabase:
+          name: careflow-7janer-db
+          property: user
+      - key: POSTGRES_PASSWORD
+        fromDatabase:
+          name: careflow-7janer-db
+          property: password
+      - key: SPRING_FLYWAY_SCHEMAS
+        value: auth_service
+      - key: SPRING_FLYWAY_DEFAULT_SCHEMA
+        value: auth_service
+      - key: SPRING_FLYWAY_CREATE_SCHEMAS
+        value: "true"
+      - key: SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA
+        value: auth_service
+      - key: ADMIN_EMAIL
+        value: admin@clinic.local
+      - key: ADMIN_PASSWORD
+        sync: false
+
+  - type: web
+    name: careflow-7janer-doctor
+    runtime: docker
+    plan: free
+    region: singapore
+    branch: main
+    dockerfilePath: ./doctor-service/Dockerfile
+    dockerContext: .
+    healthCheckPath: /actuator/health
+    envVars:
+      - fromGroup: careflow-7janer-shared
+      - key: POSTGRES_HOST
+        fromDatabase:
+          name: careflow-7janer-db
+          property: host
+      - key: POSTGRES_PORT
+        fromDatabase:
+          name: careflow-7janer-db
+          property: port
+      - key: POSTGRES_DB
+        fromDatabase:
+          name: careflow-7janer-db
+          property: database
+      - key: POSTGRES_USER
+        fromDatabase:
+          name: careflow-7janer-db
+          property: user
+      - key: POSTGRES_PASSWORD
+        fromDatabase:
+          name: careflow-7janer-db
+          property: password
+      - key: SPRING_FLYWAY_SCHEMAS
+        value: doctor_service
+      - key: SPRING_FLYWAY_DEFAULT_SCHEMA
+        value: doctor_service
+      - key: SPRING_FLYWAY_CREATE_SCHEMAS
+        value: "true"
+      - key: SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA
+        value: doctor_service
+      - key: APPOINTMENT_SERVICE_URL
+        value: https://careflow-7janer-appointment.onrender.com
+
+  - type: web
+    name: careflow-7janer-appointment
+    runtime: docker
+    plan: free
+    region: singapore
+    branch: main
+    dockerfilePath: ./appointment-service/Dockerfile
+    dockerContext: .
+    healthCheckPath: /actuator/health
+    envVars:
+      - fromGroup: careflow-7janer-shared
+      - key: POSTGRES_HOST
+        fromDatabase:
+          name: careflow-7janer-db
+          property: host
+      - key: POSTGRES_PORT
+        fromDatabase:
+          name: careflow-7janer-db
+          property: port
+      - key: POSTGRES_DB
+        fromDatabase:
+          name: careflow-7janer-db
+          property: database
+      - key: POSTGRES_USER
+        fromDatabase:
+          name: careflow-7janer-db
+          property: user
+      - key: POSTGRES_PASSWORD
+        fromDatabase:
+          name: careflow-7janer-db
+          property: password
+      - key: SPRING_FLYWAY_SCHEMAS
+        value: appointment_service
+      - key: SPRING_FLYWAY_DEFAULT_SCHEMA
+        value: appointment_service
+      - key: SPRING_FLYWAY_CREATE_SCHEMAS
+        value: "true"
+      - key: SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA
+        value: appointment_service
+      - key: DOCTOR_SERVICE_URL
+        value: https://careflow-7janer-doctor.onrender.com
+      - key: AI_SERVICE_URL
+        value: https://careflow-7janer-ai.onrender.com
+      - key: NOTIFICATION_SERVICE_URL
+        value: https://careflow-7janer-notification.onrender.com
+      - key: CLINIC_TIMEZONE
+        value: Asia/Kolkata
+
+  - type: web
+    name: careflow-7janer-ai
+    runtime: docker
+    plan: free
+    region: singapore
+    branch: main
+    dockerfilePath: ./ai-service/Dockerfile
+    dockerContext: .
+    healthCheckPath: /actuator/health
+    envVars:
+      - fromGroup: careflow-7janer-shared
+      - key: POSTGRES_HOST
+        fromDatabase:
+          name: careflow-7janer-db
+          property: host
+      - key: POSTGRES_PORT
+        fromDatabase:
+          name: careflow-7janer-db
+          property: port
+      - key: POSTGRES_DB
+        fromDatabase:
+          name: careflow-7janer-db
+          property: database
+      - key: POSTGRES_USER
+        fromDatabase:
+          name: careflow-7janer-db
+          property: user
+      - key: POSTGRES_PASSWORD
+        fromDatabase:
+          name: careflow-7janer-db
+          property: password
+      - key: SPRING_FLYWAY_SCHEMAS
+        value: ai_service
+      - key: SPRING_FLYWAY_DEFAULT_SCHEMA
+        value: ai_service
+      - key: SPRING_FLYWAY_CREATE_SCHEMAS
+        value: "true"
+      - key: SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA
+        value: ai_service
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_PRIMARY_MODEL
+        value: gemini-2.5-flash
+      - key: GEMINI_FALLBACK_MODEL
+        value: gemini-2.5-flash-lite
+
+  - type: web
+    name: careflow-7janer-notification
+    runtime: docker
+    plan: free
+    region: singapore
+    branch: main
+    dockerfilePath: ./notification-service/Dockerfile
+    dockerContext: .
+    healthCheckPath: /actuator/health
+    envVars:
+      - fromGroup: careflow-7janer-shared
+      - key: POSTGRES_HOST
+        fromDatabase:
+          name: careflow-7janer-db
+          property: host
+      - key: POSTGRES_PORT
+        fromDatabase:
+          name: careflow-7janer-db
+          property: port
+      - key: POSTGRES_DB
+        fromDatabase:
+          name: careflow-7janer-db
+          property: database
+      - key: POSTGRES_USER
+        fromDatabase:
+          name: careflow-7janer-db
+          property: user
+      - key: POSTGRES_PASSWORD
+        fromDatabase:
+          name: careflow-7janer-db
+          property: password
+      - key: SPRING_FLYWAY_SCHEMAS
+        value: notification_service
+      - key: SPRING_FLYWAY_DEFAULT_SCHEMA
+        value: notification_service
+      - key: SPRING_FLYWAY_CREATE_SCHEMAS
+        value: "true"
+      - key: SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA
+        value: notification_service
+      - key: SMTP_ENABLED
+        value: "false"
+      - key: NOTIFICATION_DRY_RUN
+        value: "true"
+      - key: GOOGLE_REDIRECT_URI
+        value: https://careflow-7janer-gateway.onrender.com/api/calendar/oauth/callback
+      - key: GOOGLE_FRONTEND_SUCCESS_URI
+        value: https://careflow-7janer-web.onrender.com/calendar-connected
+
+  - type: web
+    name: careflow-7janer-gateway
+    runtime: docker
+    plan: free
+    region: singapore
+    branch: main
+    dockerfilePath: ./api-gateway/Dockerfile
+    dockerContext: .
+    healthCheckPath: /actuator/health
+    envVars:
+      - fromGroup: careflow-7janer-shared
+      - key: AUTH_SERVICE_URL
+        value: https://careflow-7janer-auth.onrender.com
+      - key: DOCTOR_SERVICE_URL
+        value: https://careflow-7janer-doctor.onrender.com
+      - key: APPOINTMENT_SERVICE_URL
+        value: https://careflow-7janer-appointment.onrender.com
+      - key: NOTIFICATION_SERVICE_URL
+        value: https://careflow-7janer-notification.onrender.com
+      - key: FRONTEND_URL
+        value: https://careflow-7janer-web.onrender.com
+
+  - type: web
+    name: careflow-7janer-web
+    runtime: static
+    branch: main
+    rootDir: frontend
+    buildCommand: npm ci && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://careflow-7janer-gateway.onrender.com
+    routes:
+      - type: rewrite
+        source: "/*"
+        destination: /index.html
