@@ -12,6 +12,6 @@ spring:
 gemini:
  api-key: ${GEMINI_API_KEY:}
  primary-model: ${GEMINI_PRIMARY_MODEL:gemini-2.5-flash}
- fallback-model: ${GEMINI_FALLBACK_MODEL:gemini-2.0-flash-lite}
+ fallback-model: ${GEMINI_FALLBACK_MODEL:gemini-2.5-flash-lite}
 app.internal-api-key: ${INTERNAL_API_KEY:replace-with-a-second-long-random-secret}
 management.endpoints.web.exposure.include: health,info
