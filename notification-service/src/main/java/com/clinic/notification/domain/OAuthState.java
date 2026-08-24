@@ -1,0 +1,3 @@
+package com.clinic.notification.domain;
+import jakarta.persistence.*;import java.time.Instant;import java.util.UUID;
+@Entity @Table(name="oauth_states") public class OAuthState{@Id private UUID id;@Column(nullable=false)private UUID userId;@Column(nullable=false)private String email;@Column(nullable=false)private Instant expiresAt;protected OAuthState(){}public OAuthState(UUID userId,String email){id=UUID.randomUUID();this.userId=userId;this.email=email;expiresAt=Instant.now().plusSeconds(600);}public UUID getId(){return id;}public UUID getUserId(){return userId;}public String getEmail(){return email;}public boolean expired(){return Instant.now().isAfter(expiresAt);}}

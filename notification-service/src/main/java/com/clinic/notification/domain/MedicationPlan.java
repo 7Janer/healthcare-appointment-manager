@@ -1,0 +1,7 @@
+package com.clinic.notification.domain;
+import jakarta.persistence.*;import java.time.*;import java.util.UUID;
+@Entity @Table(name="medication_plans") public class MedicationPlan{
+ @Id private UUID id;@Column(nullable=false)private String dedupeKey;@Column(nullable=false)private UUID userId;@Column(nullable=false)private String email;@Column(nullable=false)private UUID appointmentId;@Column(nullable=false)private String medication;@Column(nullable=false)private String instructions;@Column(nullable=false)private int intervalHours;@Column(nullable=false)private Instant nextDueAt;@Column(nullable=false)private Instant endAt;@Column(nullable=false)private boolean active;
+ protected MedicationPlan(){}public MedicationPlan(String key,UUID userId,String email,UUID appointmentId,String medication,String instructions,int hours,Instant start,Instant end){id=UUID.randomUUID();dedupeKey=key;this.userId=userId;this.email=email;this.appointmentId=appointmentId;this.medication=medication;this.instructions=instructions;intervalHours=hours;nextDueAt=start;endAt=end;active=true;}
+ public UUID getId(){return id;}public String getDedupeKey(){return dedupeKey;}public UUID getUserId(){return userId;}public String getEmail(){return email;}public UUID getAppointmentId(){return appointmentId;}public String getMedication(){return medication;}public String getInstructions(){return instructions;}public Instant getNextDueAt(){return nextDueAt;}public void advance(){nextDueAt=nextDueAt.plus(Duration.ofHours(intervalHours));if(nextDueAt.isAfter(endAt))active=false;}
+}

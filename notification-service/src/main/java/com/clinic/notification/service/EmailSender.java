@@ -1,0 +1,7 @@
+package com.clinic.notification.service;
+import com.clinic.notification.dto.NotificationDtos.EventRequest;import org.slf4j.*;import org.springframework.beans.factory.annotation.Value;import org.springframework.mail.SimpleMailMessage;import org.springframework.mail.javamail.JavaMailSender;import org.springframework.stereotype.Component;
+@Component public class EmailSender{private static final Logger log=LoggerFactory.getLogger(EmailSender.class);private final JavaMailSender mail;private final boolean enabled,dryRun;private final String from;public EmailSender(JavaMailSender mail,@Value("${notifications.smtp-enabled:false}")boolean enabled,@Value("${notifications.dry-run:true}")boolean dryRun,@Value("${spring.mail.from}")String from){this.mail=mail;this.enabled=enabled;this.dryRun=dryRun;this.from=from;}
+ public void send(String to,EventRequest e){String subject=switch(e.type()){case"BOOKING_CONFIRMED"->"Appointment confirmed";case"APPOINTMENT_CANCELLED","DOCTOR_LEAVE_CANCELLED"->"Appointment cancelled";case"APPOINTMENT_RESCHEDULED"->"Appointment rescheduled";default->"Clinic reminder";};send(to,subject,e.message()+"\nAppointment time: "+e.startAt());}
+ public void medication(String to,String medication,String instructions){send(to,"Medication reminder",medication+"\n"+instructions);}
+ private void send(String to,String subject,String body){if(dryRun||!enabled){log.info("EMAIL DRY RUN to={} subject={}",to,subject);return;}SimpleMailMessage m=new SimpleMailMessage();m.setFrom(from);m.setTo(to);m.setSubject(subject);m.setText(body);mail.send(m);}
+}

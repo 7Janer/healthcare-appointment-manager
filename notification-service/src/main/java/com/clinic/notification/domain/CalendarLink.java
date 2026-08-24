@@ -1,0 +1,3 @@
+package com.clinic.notification.domain;
+import jakarta.persistence.*;import java.util.UUID;
+@Entity @Table(name="calendar_links",uniqueConstraints=@UniqueConstraint(columnNames={"user_id","appointment_id"})) public class CalendarLink{@Id private UUID id;@Column(name="user_id",nullable=false)private UUID userId;@Column(name="appointment_id",nullable=false)private UUID appointmentId;@Column(nullable=false)private String eventId;protected CalendarLink(){}public CalendarLink(UUID userId,UUID appointmentId,String eventId){id=UUID.randomUUID();this.userId=userId;this.appointmentId=appointmentId;this.eventId=eventId;}public String getEventId(){return eventId;}}

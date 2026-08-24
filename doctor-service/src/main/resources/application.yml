@@ -1,0 +1,14 @@
+server.port: 8082
+spring:
+  application.name: doctor-service
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/doctor_db}
+    username: ${POSTGRES_USER:clinic}
+    password: ${POSTGRES_PASSWORD:clinic_password}
+  jpa:
+    hibernate.ddl-auto: validate
+    open-in-view: false
+  flyway.enabled: true
+clients.appointment-service-url: ${APPOINTMENT_SERVICE_URL:http://localhost:8083}
+app.internal-api-key: ${INTERNAL_API_KEY:replace-with-a-second-long-random-secret}
+management.endpoints.web.exposure.include: health,info

@@ -1,0 +1,17 @@
+server.port: 8084
+spring:
+ application.name: ai-service
+ datasource:
+  url: ${DB_URL:jdbc:postgresql://localhost:5432/ai_db}
+  username: ${POSTGRES_USER:clinic}
+  password: ${POSTGRES_PASSWORD:clinic_password}
+ jpa:
+  hibernate.ddl-auto: validate
+  open-in-view: false
+ flyway.enabled: true
+gemini:
+ api-key: ${GEMINI_API_KEY:}
+ primary-model: ${GEMINI_PRIMARY_MODEL:gemini-2.5-flash}
+ fallback-model: ${GEMINI_FALLBACK_MODEL:gemini-2.0-flash-lite}
+app.internal-api-key: ${INTERNAL_API_KEY:replace-with-a-second-long-random-secret}
+management.endpoints.web.exposure.include: health,info

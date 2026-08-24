@@ -1,0 +1,7 @@
+CREATE TABLE notification_jobs(id UUID PRIMARY KEY,dedupe_key VARCHAR(255) NOT NULL UNIQUE,channel VARCHAR(20) NOT NULL,action VARCHAR(40) NOT NULL,user_id UUID,destination VARCHAR(255),appointment_id UUID,payload TEXT NOT NULL,status VARCHAR(20) NOT NULL,attempts INTEGER NOT NULL DEFAULT 0,next_attempt_at TIMESTAMPTZ NOT NULL,last_error VARCHAR(1000),created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),completed_at TIMESTAMPTZ);
+CREATE INDEX idx_notification_due ON notification_jobs(status,next_attempt_at);
+CREATE TABLE oauth_credentials(user_id UUID PRIMARY KEY,email VARCHAR(255) NOT NULL,access_token TEXT NOT NULL,refresh_token TEXT,expires_at TIMESTAMPTZ NOT NULL,updated_at TIMESTAMPTZ NOT NULL);
+CREATE TABLE oauth_states(id UUID PRIMARY KEY,user_id UUID NOT NULL,email VARCHAR(255) NOT NULL,expires_at TIMESTAMPTZ NOT NULL);
+CREATE TABLE calendar_links(id UUID PRIMARY KEY,user_id UUID NOT NULL,appointment_id UUID NOT NULL,event_id VARCHAR(255) NOT NULL,UNIQUE(user_id,appointment_id));
+CREATE TABLE medication_plans(id UUID PRIMARY KEY,dedupe_key VARCHAR(255) NOT NULL UNIQUE,user_id UUID NOT NULL,email VARCHAR(255) NOT NULL,appointment_id UUID NOT NULL,medication VARCHAR(255) NOT NULL,instructions VARCHAR(1000) NOT NULL,interval_hours INTEGER NOT NULL,next_due_at TIMESTAMPTZ NOT NULL,end_at TIMESTAMPTZ NOT NULL,active BOOLEAN NOT NULL DEFAULT TRUE);
+CREATE INDEX idx_medication_due ON medication_plans(active,next_due_at);

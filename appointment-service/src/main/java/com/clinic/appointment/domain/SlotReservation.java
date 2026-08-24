@@ -1,0 +1,6 @@
+package com.clinic.appointment.domain;
+import jakarta.persistence.*;import java.time.*;import java.util.UUID;
+@Entity @Table(name="slot_reservations",uniqueConstraints=@UniqueConstraint(columnNames={"doctor_id","start_at"})) public class SlotReservation{
+ @Id private UUID id;@Column(name="doctor_id",nullable=false)private UUID doctorId;@Column(name="start_at",nullable=false)private OffsetDateTime startAt;@Column(nullable=false)private UUID patientId;@Column(nullable=false,unique=true)private UUID holdToken;@Column(nullable=false)private Instant expiresAt;@Column(nullable=false)private boolean confirmed;private UUID appointmentId;@Version private long version;
+ protected SlotReservation(){}public UUID getId(){return id;}public UUID getDoctorId(){return doctorId;}public OffsetDateTime getStartAt(){return startAt;}public UUID getPatientId(){return patientId;}public UUID getHoldToken(){return holdToken;}public Instant getExpiresAt(){return expiresAt;}public boolean isConfirmed(){return confirmed;}public boolean expired(){return !confirmed&&Instant.now().isAfter(expiresAt);}public void confirm(UUID appointmentId){this.confirmed=true;this.appointmentId=appointmentId;this.expiresAt=Instant.parse("9999-12-31T00:00:00Z");}
+}

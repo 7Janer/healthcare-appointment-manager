@@ -1,0 +1,4 @@
+import {createContext,useContext,useMemo,useState,type ReactNode} from 'react';import type{AuthData}from'./types';
+type AuthContextValue={auth:AuthData|null;setAuth:(value:AuthData|null)=>void;logout:()=>void};const AuthContext=createContext<AuthContextValue|null>(null);
+export function AuthProvider({children}:{children:ReactNode}){const[auth,setState]=useState<AuthData|null>(()=>{try{return JSON.parse(localStorage.getItem('careflow-auth')||'null')}catch{return null}});const setAuth=(v:AuthData|null)=>{setState(v);if(v)localStorage.setItem('careflow-auth',JSON.stringify(v));else localStorage.removeItem('careflow-auth')};const value=useMemo(()=>({auth,setAuth,logout:()=>setAuth(null)}),[auth]);return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>}
+export function useAuth(){const value=useContext(AuthContext);if(!value)throw new Error('AuthProvider missing');return value}

@@ -1,0 +1,4 @@
+import type {AuthData} from './types';
+const API=import.meta.env.VITE_API_URL||'http://localhost:8080';
+export class ApiError extends Error{status:number;constructor(status:number,message:string){super(message);this.status=status}}
+export async function api<T>(path:string,options:RequestInit={},auth?:AuthData|null):Promise<T>{const headers=new Headers(options.headers);if(options.body)headers.set('Content-Type','application/json');if(auth)headers.set('Authorization',`Bearer ${auth.token}`);const response=await fetch(`${API}${path}`,{...options,headers});if(!response.ok){let message=`Request failed (${response.status})`;try{const body=await response.json();message=body.message||body.code||message}catch{}throw new ApiError(response.status,message)}if(response.status===204)return undefined as T;return response.json() as Promise<T>}

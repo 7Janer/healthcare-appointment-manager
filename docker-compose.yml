@@ -1,0 +1,102 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-clinic}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-clinic_password}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./infra/postgres/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-clinic}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  auth-service:
+    build:
+      context: .
+      dockerfile: auth-service/Dockerfile
+    env_file: .env
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/auth_db
+    depends_on:
+      postgres: { condition: service_healthy }
+
+  doctor-service:
+    build:
+      context: .
+      dockerfile: doctor-service/Dockerfile
+    env_file: .env
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/doctor_db
+      APPOINTMENT_SERVICE_URL: http://appointment-service:8083
+    depends_on:
+      postgres: { condition: service_healthy }
+
+  ai-service:
+    build:
+      context: .
+      dockerfile: ai-service/Dockerfile
+    env_file: .env
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/ai_db
+    depends_on:
+      postgres: { condition: service_healthy }
+
+  notification-service:
+    build:
+      context: .
+      dockerfile: notification-service/Dockerfile
+    env_file: .env
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/notification_db
+    depends_on:
+      postgres: { condition: service_healthy }
+
+  appointment-service:
+    build:
+      context: .
+      dockerfile: appointment-service/Dockerfile
+    env_file: .env
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/appointment_db
+      DOCTOR_SERVICE_URL: http://doctor-service:8082
+      AI_SERVICE_URL: http://ai-service:8084
+      NOTIFICATION_SERVICE_URL: http://notification-service:8085
+    depends_on:
+      postgres: { condition: service_healthy }
+      doctor-service: { condition: service_started }
+      ai-service: { condition: service_started }
+      notification-service: { condition: service_started }
+
+  api-gateway:
+    build:
+      context: .
+      dockerfile: api-gateway/Dockerfile
+    env_file: .env
+    environment:
+      AUTH_SERVICE_URL: http://auth-service:8081
+      DOCTOR_SERVICE_URL: http://doctor-service:8082
+      APPOINTMENT_SERVICE_URL: http://appointment-service:8083
+      NOTIFICATION_SERVICE_URL: http://notification-service:8085
+    ports:
+      - "8080:8080"
+    depends_on:
+      - auth-service
+      - doctor-service
+      - appointment-service
+      - notification-service
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:8080}
+    ports:
+      - "5173:80"
+    depends_on:
+      - api-gateway
+
+volumes:
+  postgres_data:

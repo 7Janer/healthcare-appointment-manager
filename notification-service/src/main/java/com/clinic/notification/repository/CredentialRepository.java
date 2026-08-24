@@ -1,0 +1,1 @@
+package com.clinic.notification.repository;import com.clinic.notification.domain.OAuthCredential;import org.springframework.data.jpa.repository.JpaRepository;import java.util.UUID;public interface CredentialRepository extends JpaRepository<OAuthCredential,UUID>{}
